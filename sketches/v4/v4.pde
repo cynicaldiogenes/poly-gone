@@ -25,6 +25,7 @@ To do list:
 
 
 int[] rowList = {24, 24, 24, 24, 24, 24, 24, 24};
+
 ArrayList<Boxel> boxels;
 PImage palette;
 int frameIndex;
