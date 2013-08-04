@@ -26,7 +26,7 @@ To do list:
 
 int[] rowList = {24, 24, 24, 24, 24, 24, 24, 24};
 ArrayList<Boxel> boxels;
-
+PImage palette;
 int frameIndex;
 color selectedC; //User selected color that effects use as a base
 TestObserver testObserver;
@@ -51,7 +51,8 @@ class TestObserver implements Observer {
 
 
 void setup() {
-  size(400, 600); //change this to 800 x 1200 for nexus 7
+  size(800, 1000); //change this to 800 x 1200 for nexus 7
+  palette = loadImage("palette.jpg");
   registry = new DeviceRegistry();
   testObserver = new TestObserver();
   registry.addObserver(testObserver);
@@ -71,6 +72,7 @@ void setup() {
 }
 
 void draw(){
+  image(palette, 0, height/2, width/2, height/2);
   frameIndex = (frameCount % boxels.size());
   if (testObserver.hasStrips) { 
     registry.startPushing();
