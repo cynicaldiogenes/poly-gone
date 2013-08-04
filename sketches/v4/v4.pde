@@ -3,7 +3,7 @@ import com.heroicrobot.dropbit.common.*;
 import com.heroicrobot.dropbit.discovery.*;
 import com.heroicrobot.dropbit.registry.*;
 import com.heroicrobot.dropbit.devices.pixelpusher.*;
-
+import java.util.*;
 /*
 To do list:
   -Change chaser to periodically shift selectedC to a new value (use a list of vivid colors, derive their complements)
@@ -22,8 +22,6 @@ To do list:
 
 //set global list of rows to simulate varying strip lengths
 //int[] rowList = {10, 10, 8, 12, 8, 13, 10, 10, 11, 12 , 7, 10, 10, 10};
-//import hypermedia.net.*;
-import java.util.*;
 
 
 int[] rowList = {24, 24, 24, 24, 24, 24, 24, 24};
@@ -32,6 +30,7 @@ ArrayList<Palette> palettes;
 int frameIndex;
 color selectedC; //User selected color that effects use as a base
 TestObserver testObserver;
+DeviceRegistry registry;
 
 /*----------------- Effects listed here ---------------*/
 ChaseFX chase;
@@ -219,7 +218,8 @@ void draw(){
     doEffect();
     for (int i = 0; i < boxels.size(); i++) {
       Boxel b = boxels.get(i);
-      render(b, strips[b.ypos]);
+      Strip s = strips.get(b.ypos);
+      render(b, s);
     }
   }
 }
@@ -232,6 +232,7 @@ void render(Boxel b, Strip s) {
   if (b.currentC != b.lastC) {
     fill(b.currentC);
     s.setPixel(b.currentC, b.xpos);
+    println("Setting pixel number " + str(b.xpos) + " to color " + str(b.currentC));
     b.setC(b.currentC);
     float ysize = (height/rowList.length)/2;
     float xsize = width/rowList[b.ypos];
