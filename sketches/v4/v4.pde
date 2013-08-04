@@ -35,6 +35,7 @@ DeviceRegistry registry;
 /*----------------- Effects listed here ---------------*/
 ChaseFX chase;
 CheckerFX checker;
+CrossFX cross;
 
 /*----------------- Color palettes here ---------------*/
 
@@ -61,12 +62,13 @@ void setup() {
   boxels = new ArrayList<Boxel>();
   for (int i = 0; i < rowList.length; i++) {
     for (int j = 0; j < rowList[i]; j++) {
-      Boxel newBoxel = new Boxel(j, i);
+      Boxel newBoxel = new Boxel(j, i, rowList[i], rowList.length);
       boxels.add(newBoxel);
     }
   }
   chase = new ChaseFX();
   checker = new CheckerFX();
+  cross = new CrossFX();
   noStroke();
   noSmooth();
 }
@@ -103,8 +105,36 @@ void render(Boxel b, Strip s) {
 }
 
 void doEffect() {
-  checker.FXloop();
+  cross.FXloop();
+  //checker.FXloop();
   //chase.FXloop();
+}
+
+class CrossFX {
+  float x=0.0;
+  float y=0.0;
+  float wid=0.2;
+  
+  CrossFX() {
+  } 
+  void FXloop() {
+    x+=0.01;
+    if(x >= 1.0) {
+      x -= 1.0;
+    }
+    y += 0.01;
+    if(y >= 1.0) {
+      y -= 1.0;
+    }
+    for (int i=0; i<boxels.size(); i++) {
+      Boxel b=boxels.get(i);
+      if((b.xvirt >= x && b.xvirt < (x+wid)) || (b.yvirt >= y && b.yvirt < (y+wid))) {
+        b.setC(selectedC);
+      } else {
+        b.setC(color(0,0,0));
+      }
+    }
+  } 
 }
 
 class ChaseFX {
@@ -191,12 +221,21 @@ class Boxel {
   color lastC;
   int xpos;
   int ypos;
+  float xvirt;
+  float yvirt;
+  int numX;
+  int numY;
 
-  Boxel(int tempXpos, int tempYpos) {
+  Boxel(int tempXpos, int tempYpos, int tempnumx, int tempnumy) {
     currentC = color(0,0,1);
     lastC = color(0,0,0);
     xpos = tempXpos;
     ypos = tempYpos;
+    numX=tempnumx;
+    numY=tempnumy;
+    xvirt = float(xpos+1)/float(numX);
+    yvirt = float(ypos+1)/float(numY);
+    println("setting xv " + xvirt + " yv " + yvirt);
   }
 
   void setC(color newC) {
