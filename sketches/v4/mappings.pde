@@ -1,8 +1,8 @@
-class Mappings {
+class PixelMap {
   
   String[][] csv;
 
-  Mappings() {
+  PixelMap() {
     String lines[] = loadStrings("mapping.csv");
     
     int csvWidth = 0;

@@ -32,6 +32,7 @@ int frameIndex;
 color selectedC; //User selected color that effects use as a base
 TestObserver testObserver;
 DeviceRegistry registry;
+PixelMap pMap;
 
 /*----------------- Effects listed here ---------------*/
 ChaseFX chase;
@@ -58,6 +59,7 @@ void setup() {
   registry = new DeviceRegistry();
   testObserver = new TestObserver();
   registry.addObserver(testObserver);
+  pMap = new PixelMap();
   background(255);
   colorMode(HSB);//, 360, 255, 255);
   boxels = new ArrayList<Boxel>();
@@ -79,12 +81,10 @@ void draw(){
   frameIndex = (frameCount % boxels.size());
   if (testObserver.hasStrips) { 
     registry.startPushing();
-    List<Strip> strips = registry.getStrips();
     doEffect();
     for (int i = 0; i < boxels.size(); i++) {
       Boxel b = boxels.get(i);
-      Strip s = strips.get(b.ypos);
-      render(b, s);
+      render(b);
     }
   }
 }
@@ -93,10 +93,15 @@ void mousePressed() {
   selectedC = get(mouseX, mouseY);
 }
 
-void render(Boxel b, Strip s) {
+void render(Boxel b) {
   if (b.currentC != b.lastC) {
     fill(b.currentC);
-    s.setPixel(b.currentC, b.xpos);
+    List<Strip> strips = registry.getStrips();
+    int[][]pList = pMap.pixels(b.ypos, b.xpos); //Get the list of physical pixels for this logical one
+    for (int i = 0; i < pList.length; i++) {
+      Strip myStrip = strips.get(pList[i][0]);
+      myStrip.setPixel(b.currentC, pList[i][1]); //Render this color to each physical pixel
+    }
     println("Setting pixel number " + str(b.xpos) + " to color " + str(b.currentC));
     b.setC(b.currentC);
     float ysize = (height/rowList.length)/2;
