@@ -3,9 +3,12 @@ class PixelMap {
   String[][] csv;
   int[] stripLengths;
   int numStrips;
+  //String csvfile = "mapping.csv";
+  String csvfile = "1to1mapping.csv";
+
 
   PixelMap() {
-    String lines[] = loadStrings("mapping.csv");
+    String lines[] = loadStrings(csvfile);
     numStrips = lines.length;
     stripLengths = new int[lines.length];
 
