@@ -70,13 +70,7 @@ void setup() {
         boxels.add(newBoxel);
       }
     }
-  }/*
-  for (int i = 0; i < rowList.length; i++) {
-    for (int j = 0; j < rowList[i]; j++) {
-      Boxel newBoxel = new Boxel(j, i, , rowList.length);
-      boxels.add(newBoxel);
-    }
-  }*/
+  }
   chase = new ChaseFX();
   checker = new CheckerFX();
   cross = new CrossFX();
