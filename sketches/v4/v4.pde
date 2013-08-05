@@ -63,12 +63,20 @@ void setup() {
   background(255);
   colorMode(HSB);//, 360, 255, 255);
   boxels = new ArrayList<Boxel>();
+  for (int i = 0; i < pMap.numStrips; i++) {
+    for (int j = 0; j < pMap.stripLengths[i]; j++) {
+      if (pMap.csv[i][j].length() != 0) {
+        Boxel newBoxel = new Boxel(j, i, pMap.stripLengths[i], pMap.numStrips);
+        boxels.add(newBoxel);
+      }
+    }
+  }/*
   for (int i = 0; i < rowList.length; i++) {
     for (int j = 0; j < rowList[i]; j++) {
-      Boxel newBoxel = new Boxel(j, i, rowList[i], rowList.length);
+      Boxel newBoxel = new Boxel(j, i, , rowList.length);
       boxels.add(newBoxel);
     }
-  }
+  }*/
   chase = new ChaseFX();
   checker = new CheckerFX();
   cross = new CrossFX();
@@ -104,8 +112,10 @@ void render(Boxel b) {
     }
     println("Setting pixel number " + str(b.xpos) + " to color " + str(b.currentC));
     b.setC(b.currentC);
-    float ysize = (height/rowList.length)/2;
-    float xsize = width/rowList[b.ypos];
+    /*float ysize = (height/rowList.length)/2;
+    float xsize = width/rowList[b.ypos];*/
+    float ysize = (height/pMap.numStrips)/2;
+    float xsize = width/pMap.stripLengths[b.ypos];
     rect((xsize * b.xpos), (ysize * b.ypos), xsize, ysize);
   }
 }
