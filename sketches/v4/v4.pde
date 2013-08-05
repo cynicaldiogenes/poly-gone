@@ -87,37 +87,30 @@ void setup() {
 void draw(){
   image(palette, 0, height/2, width/2, height/2);
   frameIndex = (frameCount % boxels.size());
+  doEffect();
   if (testObserver.hasStrips) { 
     registry.startPushing();
-    doEffect();
-    for (int i = 0; i < boxels.size(); i++) {
-      Boxel b = boxels.get(i);
-      render(b);
-    }
   }
+    for (int j = 0; j < boxels.size(); j++) {
+      Boxel b = boxels.get(j);
+      fill(b.currentC);
+      List<Strip> strips = registry.getStrips();
+      int[][]pList = pMap.pixels(b.ypos, b.xpos); //Get the list of physical pixels for this logical one
+      if(testObserver.hasStrips) {
+        for (int i = 0; i < pList.length; i++) {
+          Strip myStrip = strips.get(pList[i][0]);
+          myStrip.setPixel(b.currentC, pList[i][1]); //Render this color to each physical pixel
+        }
+      }
+      println("Setting pixel number " + str(b.xpos) + " to color " + str(b.currentC));
+      float ysize = (height/pMap.numStrips)/2;
+      float xsize = width/pMap.stripLengths[b.ypos];
+      rect((xsize * b.xpos), (ysize * b.ypos), xsize, ysize);
+    }
 }
 
 void mousePressed() {
   selectedC = get(mouseX, mouseY);
-}
-
-void render(Boxel b) {
-  if (b.currentC != b.lastC) {
-    fill(b.currentC);
-    List<Strip> strips = registry.getStrips();
-    int[][]pList = pMap.pixels(b.ypos, b.xpos); //Get the list of physical pixels for this logical one
-    for (int i = 0; i < pList.length; i++) {
-      Strip myStrip = strips.get(pList[i][0]);
-      myStrip.setPixel(b.currentC, pList[i][1]); //Render this color to each physical pixel
-    }
-    println("Setting pixel number " + str(b.xpos) + " to color " + str(b.currentC));
-    b.setC(b.currentC);
-    /*float ysize = (height/rowList.length)/2;
-    float xsize = width/rowList[b.ypos];*/
-    float ysize = (height/pMap.numStrips)/2;
-    float xsize = width/pMap.stripLengths[b.ypos];
-    rect((xsize * b.xpos), (ysize * b.ypos), xsize, ysize);
-  }
 }
 
 void doEffect() {
