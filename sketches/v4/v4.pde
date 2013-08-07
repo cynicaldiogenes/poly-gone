@@ -5,20 +5,18 @@ import com.heroicrobot.dropbit.registry.*;
 import com.heroicrobot.dropbit.devices.pixelpusher.*;
 import java.util.*;
 import controlP5.*;
+import java.awt.Color;
+
 /*
 To do list:
   -Change chaser to periodically shift selectedC to a new value (use a list of vivid colors, derive their complements)
   -Add a new effect (checkerboard - every other pixel with color + complement, and a 3-step animation)
   -Add mechanism to switch which effect is running, and UI to select between them
-  -Change HSB color wheel to a grid of good solid colors (too many bad colors in the color hweel)
-  -Abstract pixel mapping for 8 physical strips of pixels but N logical
   -Add a new effect (row-by-row shift or update)
   -Add a new effect (color random pixel, then color 2 random pixels, then 3, until all are colored)
   -Full lighting breathe pattern (change brightness on all lights simultaneously, using sine wave style algorithm)
   -Add ability to make chase run in reverse
   -Build as an android package and run on n7
-  -Make a list of 'good' colors that will display well on LEDs
-  -Implement a 'reset' that changes all pixels back to their original state
 */
 
 //set global list of rows to simulate varying strip lengths
@@ -37,6 +35,7 @@ PixelMap pMap;
 int currentEffect = 0;
 int lastEffect = 0;
 int fxFrameCount = 0;
+boolean cycleColors = false;
 
 /*----------------- Effects listed here ---------------*/
 ChaseFX chase;
@@ -69,21 +68,28 @@ void setup() {
   pMap = new PixelMap();
   cp5 = new ControlP5(this);
   cp5.addButton("cross")
-    .setValue(0)
-    .setPosition((width/2), (height/2))
-    .setSize((width/4), 40)
-    .setId(0);
-    ;
-  cp5.addButton("checker")
     .setValue(1)
-    .setPosition((width/2), ((height/2) + 40))
-    .setSize((width/4), 40)
+    .setPosition((width/2), (height/2))
+    .setSize((width/4), (height/10))
     .setId(1);
     ;
-  cp5.addButton("chase")
+  cp5.addButton("checker")
     .setValue(2)
-    .setPosition((width/2), ((height/2) + 80))
-    .setSize((width/4), 40)
+    .setPosition((width/2), ((height/2) + ((height/10) * 2)))
+    .setSize((width/4), (height/10))
+    .setId(2);
+    ;
+  cp5.addButton("chase")
+    .setValue(3)
+    .setPosition((width/2), ((height/2) + ((height/10) * 3)))
+    .setSize((width/4), (height/10))
+    .setId(3)
+    ;
+  cp5.addToggle("cycleColors")
+    .setPosition(((width/4) * 3), ((height/10) * 9))
+    .setSize((width/4), (height/10))
+    .setId(0);
+    ;
   background(255);
   colorMode(HSB);//, 360, 255, 255);
   boxels = new ArrayList<Boxel>();
@@ -126,10 +132,29 @@ void draw(){
       rect((xsize * b.xpos), (ysize * b.ypos), xsize, ysize);
     }
   fxFrameCount++;
+  if (cycleColors == true) {
+    startCycling();
+  }
+}
+
+void startCycling() {
+  if ((frameCount % 150) == 0) {
+    selectedC = randomizeColor(selectedC);
+  }
+}
+
+int randomizeColor(int oldColor) {
+  float newHue = random(360);
+  float newSat = random(100);
+  float newBri = random(75,100);
+  color newColor = Color.HSBtoRGB(newHue, newSat, newBri);
+  return color(newColor);
 }
 
 public void controlEvent(ControlEvent theEvent) {
-  currentEffect = theEvent.getId();
+  if (theEvent.getId() != 0) {
+    currentEffect = theEvent.getId();
+  } 
 }
 
 void mousePressed() {
@@ -151,13 +176,13 @@ void doEffect() {
     lastEffect = currentEffect;
   }
   switch(currentEffect) {
-    case 0:
+    case 1:
       cross.FXloop();
       break;
-    case 1:
+    case 2:
       checker.FXloop();
       break;
-    case 2:
+    case 3:
       chase.FXloop();
       break;
   }
